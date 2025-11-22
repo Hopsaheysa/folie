@@ -12,8 +12,6 @@
     --transition-fast: 0.2s ease;
 }
 
-/* ====== Reset & base ====== */
-
 *,
 *::before,
 *::after {
@@ -58,8 +56,6 @@ section[id] {
     padding: 1.5rem 0;
     background-color: var(--color-bg-alt);
 }
-
-/* ====== Header & navigation ====== */
 
 .site-header {
     position: sticky;
@@ -152,8 +148,6 @@ section[id] {
     }
 }
 
-/* ====== Hero ====== */
-
 .hero {
     padding: 3rem 0 3rem;
     background: radial-gradient(circle at top left, #ffffff, #f0f0f0 40%, #e9edf2 100%);
@@ -204,8 +198,6 @@ section[id] {
     }
 }
 
-/* ====== Buttons ====== */
-
 .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -250,8 +242,6 @@ section[id] {
     border-color: #c5c5c5;
 }
 
-/* ====== Layout: two columns ====== */
-
 .two-columns {
     display: grid;
     grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
@@ -277,8 +267,6 @@ section[id] {
     }
 }
 
-/* ====== Typography ====== */
-
 h2 {
     font-size: 1.7rem;
     margin-top: 0;
@@ -299,8 +287,6 @@ ul {
     margin-top: 0.3rem;
 }
 
-/* ====== Ceník ====== */
-
 .price-table {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -309,68 +295,90 @@ ul {
 }
 
 .price-card {
-    background-color: #ffffff;
+    position: relative;
+    background: linear-gradient(135deg, #ffffff, #fffbf7);
     border-radius: var(--radius-lg);
     padding: 1.5rem;
     box-shadow: var(--shadow-soft);
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     cursor: pointer;
+    overflow: hidden;
+}
+
+.price-card::before {
+    content: "";
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(230, 126, 34, 0.01), transparent 30%);
+    pointer-events: none;
 }
 
 .price-card-inner {
     display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: start;
-    gap: 1rem;
+    grid-template-columns: 1.2fr 1.4fr;
+    align-items: flex-start;
+    gap: 1.25rem;
 }
 
 .price-left h3 {
     margin-top: 0;
+    margin-bottom: 0.4rem;
 }
 
 .price-left .price {
-    margin-top: 0.4rem;
-    color: var(--color-primary);
+    margin-top: 0.2rem;
+    font-size: 1.25rem;
     font-weight: 700;
+    color: var(--color-primary);
 }
 
 .price-right {
-    color: #666666;
     font-size: 0.9rem;
 }
 
-.price-right ul {
+.price-right-inner {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.price-right-inner ul {
     margin: 0;
     padding-left: 1.1rem;
 }
 
-.price-right li {
-    margin-bottom: 0.3rem;
+.price-right-inner li {
+    margin-bottom: 0.25rem;
 }
 
 .price-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.14);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+    border-color: rgba(230, 126, 34, 0.3);
 }
 
-.price {
-    font-size: 1.2rem;
+.price-card-featured {
+    border-color: rgba(230, 126, 34, 0.6);
+}
+
+.price-badge {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.95rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
     font-weight: 700;
-    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: rgba(230, 126, 34, 0.12);
+    color: var(--color-primary-dark);
 }
-
-.price-note {
-    margin-top: 1.5rem;
-    color: var(--color-muted);
-}
-
-@media (max-width: 900px) {
-    .price-table {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ====== Reklamní polepy (2×2 grid) ====== */
 
 .reklama-grid {
     display: grid;
@@ -405,8 +413,6 @@ ul {
         height: auto;
     }
 }
-
-/* ====== Galerie ====== */
 
 .gallery-grid {
     display: grid;
@@ -448,8 +454,6 @@ ul {
     }
 }
 
-/* ====== Kontakt – karta ====== */
-
 .contact-card {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -486,8 +490,6 @@ ul {
     margin-top: 1rem;
     align-self: flex-start;
 }
-
-/* Sociální tlačítka */
 
 .social-buttons {
     margin-top: 1rem;
@@ -526,8 +528,6 @@ ul {
     box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
-/* Mapa v kartě */
-
 .contact-map iframe {
     width: 100%;
     height: 100%;
@@ -543,8 +543,6 @@ ul {
     }
 }
 
-/* ====== Footer ====== */
-
 .site-footer {
     padding: 2rem 0;
     background-color: #000000;
@@ -558,4 +556,64 @@ ul {
 
 .site-footer a {
     color: #ffffff;
+}
+.email-copy {
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 1rem;
+    font-weight: 600;
+    color: var(--color-primary-dark);
+    background: #fff3e6;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+}
+
+.email-copy--copied {
+    background: #2ecc71;
+    color: #ffffff;
+}
+
+.copy-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translateX(-50%);
+    background: #2ecc71;
+    color: #ffffff;
+    padding: 0.6rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 200;
+}
+
+.copy-toast--error {
+    background: #e74c3c;
+}
+
+.copy-toast--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+@keyframes contact-mail-pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: var(--shadow-soft);
+    }
+    50% {
+        transform: scale(1.25);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: var(--shadow-soft);
+    }
+}
+
+.contact-mail-pulse {
+    animation: contact-mail-pulse 0.45s ease 0s 2;
 }

@@ -2,7 +2,14 @@ const navToggle = document.getElementById("navToggle");
 const mainNav = document.getElementById("mainNav");
 
 const USER = "vinklat";
+const MAGIC_NUMBER = 64;
+const ZAV = String.fromCharCode(MAGIC_NUMBER); // lol
 const DOMAIN = "seznam.cz";
+const CONTACT_EMAIL = `${USER}${ZAV}${DOMAIN}`;
+
+let pendingEmailSubject = null;
+let pendingEmailBody = null;
+const CONTACT_BUTTON_DEFAULT_LABEL = "Napsat e-mail";
 
 if (navToggle && mainNav) {
     navToggle.addEventListener("click", () => {
@@ -21,23 +28,117 @@ if (yearEl) {
     yearEl.textContent = new Date().getFullYear().toString();
 }
 
-const heroEmailButton = document.getElementById("heroEmailButton");
-if (heroEmailButton) {
-    heroEmailButton.addEventListener("click", (e) => {
+function buildDefaultBody() {
+    return [
+        "Dobrý den,",
+        "",
+        "měl(a) bych zájem o tónování autoskel / polep.",
+        "",
+        "Prosím o zaslání dodatečných informací a časových možností.",
+        "",
+        "Děkuji a přeji hezký den."
+    ].join("\n");
+}
+
+function tryOpenEmail(address, subjectText, bodyText = "") {
+    const subject = encodeURIComponent(subjectText);
+    const body = bodyText ? encodeURIComponent(bodyText) : "";
+
+    let href = `mailto:${address}?subject=${subject}`;
+    if (body) {
+        href += `&body=${body}`;
+    }
+
+    window.location.href = href;
+}
+
+function transformContactButtonToEmail(address) {
+    const oldBtn = document.getElementById("contactEmailButton");
+    if (!oldBtn) return;
+
+    if (document.getElementById("contactEmailFallback")) {
+        return;
+    }
+
+    const span = document.createElement("span");
+    span.id = "contactEmailFallback";
+    span.className = "email-copy";
+    span.textContent = address;
+
+    oldBtn.replaceWith(span);
+    copyWithFeedback(span, address);
+
+    span.addEventListener("click", () => {
+        copyWithFeedback(span, address);
+
+        const subject = pendingEmailSubject || "Poptávka – Autofólie Vodňany";
+        const body = pendingEmailBody || buildDefaultBody();
+        tryOpenEmail(address, subject, body);
+    });
+}
+
+function copyWithFeedback(element, text) {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+        return;
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+        const original = element.textContent;
+        element.textContent = `${text} (zkopírováno)`;
+        setTimeout(() => {
+            element.textContent = original;
+        }, 1500);
+    }).catch(() => {
+        // ignore copy errors
+    });
+}
+
+function pulseContactButton(delayMs = 0) {
+    const btn = document.getElementById("contactEmailButton");
+    if (!btn) return;
+
+    const run = () => {
+        btn.classList.remove("contact-mail-pulse");
+        void btn.offsetWidth;
+        btn.classList.add("contact-mail-pulse");
+    };
+
+    if (delayMs > 0) {
+        setTimeout(run, delayMs);
+    } else {
+        run();
+    }
+}
+
+const heroButton = document.getElementById("heroEmailButton");
+if (heroButton) {
+    heroButton.textContent = "Kontaktovat";
+    heroButton.addEventListener("click", (e) => {
         e.preventDefault();
-        const subject = encodeURIComponent("Poptávka – Autofólie Vodňany");
-        const email = `${USER}@${DOMAIN}`;
-        window.location.href = `mailto:${email}?subject=${subject}`;
+
+        pendingEmailSubject = null;
+        pendingEmailBody = null;
+
+        const contactSection = document.getElementById("contact");
+        if (contactSection) {
+            contactSection.scrollIntoView({ behavior: "smooth" });
+            pulseContactButton(1500);
+        }
     });
 }
 
 const contactEmailButton = document.getElementById("contactEmailButton");
 if (contactEmailButton) {
+    contactEmailButton.textContent = CONTACT_BUTTON_DEFAULT_LABEL;
+
     contactEmailButton.addEventListener("click", (e) => {
         e.preventDefault();
-        const subject = encodeURIComponent("Poptávka – Autofólie Vodňany");
-        const email = `${USER}@${DOMAIN}`;
-        window.location.href = `mailto:${email}?subject=${subject}`;
+
+        const subject = pendingEmailSubject || "Poptávka – Autofólie Vodňany";
+        const body = pendingEmailBody || buildDefaultBody();
+
+        tryOpenEmail(CONTACT_EMAIL, subject, body);
+        transformContactButtonToEmail(CONTACT_EMAIL);
     });
 }
 
@@ -63,7 +164,7 @@ async function loadPriceList() {
         const rows = lines.slice(1);
         container.innerHTML = "";
 
-        rows.forEach((line) => {
+        rows.forEach((line, index) => {
             if (!line.trim()) return;
 
             const parts = line.split(";");
@@ -102,8 +203,12 @@ async function loadPriceList() {
 
             const rightCol = document.createElement("div");
             rightCol.className = "price-right";
+
             if (ul.children.length > 0) {
-                rightCol.appendChild(ul);
+                const rightInner = document.createElement("div");
+                rightInner.className = "price-right-inner";
+                rightInner.appendChild(ul);
+                rightCol.appendChild(rightInner);
             }
 
             inner.appendChild(leftCol);
@@ -111,20 +216,31 @@ async function loadPriceList() {
             card.appendChild(inner);
 
             card.addEventListener("click", () => {
-                const subject = encodeURIComponent(`Poptávka – ${title}`);
+                const subject = `Poptávka – ${title}`;
                 const bodyLines = [
                     "Dobrý den,",
                     "",
                     "měl(a) bych zájem o polep:",
-                    `${title} za ${price}`,
+                    `${title} (${price})`,
                     "",
                     "Prosím o zaslání dodatečných informací a časových možností.",
                     "",
                     "Děkuji a přeji hezký den."
                 ];
-                const body = encodeURIComponent(bodyLines.join("\n"));
-                const email = `${USER}@${DOMAIN}`;
-                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+                const body = bodyLines.join("\n");
+
+                pendingEmailSubject = subject;
+                pendingEmailBody = body;
+
+                if (contactEmailButton) {
+                    contactEmailButton.textContent = `Napsat o: ${title}`;
+                }
+
+                const contactSection = document.getElementById("kontakt");
+                if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: "smooth" });
+                    pulseContactButton(600);
+                }
             });
 
             container.appendChild(card);
@@ -136,5 +252,5 @@ async function loadPriceList() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadPriceList();
+    void loadPriceList();
 });
