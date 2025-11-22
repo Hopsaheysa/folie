@@ -119,7 +119,7 @@ if (heroButton) {
         pendingEmailSubject = null;
         pendingEmailBody = null;
 
-        const contactSection = document.getElementById("contact");
+        const contactSection = document.getElementById("kontakt");
         if (contactSection) {
             contactSection.scrollIntoView({ behavior: "smooth" });
             pulseContactButton(1500);
